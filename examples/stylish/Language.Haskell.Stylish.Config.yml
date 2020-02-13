@@ -1,0 +1,318 @@
+module: Language.Haskell.Stylish.Config
+use:
+  - Control.Monad
+  - Data.Aeson
+  - Data.Aeson.Types
+  - Data.ByteString
+  - Data.Char
+  - Data.FileEmbed
+  - Data.List
+  - Data.Map
+  - Data.Maybe
+  - Data.Yaml
+  - System.Directory
+  - System.FilePath
+  - System.IO
+  - Language.Haskell.Stylish.Config.Cabal
+  - Language.Haskell.Stylish.Config.Internal
+  - Language.Haskell.Stylish.Step
+  - Language.Haskell.Stylish.Step.Imports
+  - Language.Haskell.Stylish.Step.LanguagePragmas
+  - Language.Haskell.Stylish.Step.SimpleAlign
+  - Language.Haskell.Stylish.Step.Squash
+  - Language.Haskell.Stylish.Step.Tabs
+  - Language.Haskell.Stylish.Step.TrailingWhitespace
+  - Language.Haskell.Stylish.Step.UnicodeSyntax
+  - Language.Haskell.Stylish.Verbose
+symbols:
+  - symbol: Extensions
+    type: List String
+    use:
+      - [Prelude, List]
+      - [Prelude, String]
+  - symbol: Config
+    type: Config
+    use: []
+  - symbol: configSteps
+    type: List Step
+    use:
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Step, Step]
+  - symbol: configColumns
+    type: Int
+    use:
+      - [Prelude, Int]
+  - symbol: configLanguageExtensions
+    type: List String
+    use:
+      - [Prelude, List]
+      - [Prelude, String]
+  - symbol: configNewline
+    type: Newline
+    use:
+      - [System.IO, Newline]
+  - symbol: configCabal
+    type: Bool
+    use:
+      - [Prelude, Bool]
+  - symbol: configFileName
+    type: String
+    use:
+      - [Prelude, String]
+  - symbol: defaultConfigBytes
+    type: ByteString
+    use:
+      - [Data.ByteString, ByteString]
+      - [Data.FileEmbed, embedFile]
+  - symbol: configFilePath
+    type: Verbose -> Maybe FilePath -> IO (Maybe FilePath)
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [System.Directory, getCurrentDirectory]
+      - [System.Directory, getXdgDirectory]
+      - [System.Directory, XdgDirectory]
+      - [System.Directory, getHomeDirectory]
+      - [Language.Haskell.Stylish.Config, search]
+      - [System.FilePath, "</>"]
+      - [Language.Haskell.Stylish.Config, configFileName]
+      - [Language.Haskell.Stylish.Config.Internal, ancestors]
+      - [Prelude, ++]
+      - [Prelude, List]
+  - symbol: search
+    type: Verbose -> List FilePath -> IO (Maybe FilePath)
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, List]
+      - [Prelude, FilePath]
+      - [Prelude, Maybe]
+      - [Prelude, ":"]
+      - [System.Directory, doesFileExist]
+      - [Prelude, Bool]
+      - [Prelude, ++]
+      - [Prelude, "$"]
+      - [Prelude, return]
+      - [Prelude, Just]
+  - symbol: loadConfig
+    type: Verbose -> Maybe FilePath -> IO Config
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Language.Haskell.Stylish.Config, configFilePath]
+      - [Prelude, ++]
+      - [Data.Maybe, fromMaybe]
+      - [Prelude, "$"]
+      - [Prelude, maybe]
+      - [Prelude, return]
+      - [Language.Haskell.Stylish.Config, defaultConfigBytes]
+      - [Data.ByteString, readFile]
+      - [Data.Yaml, decodeEither']
+      - [Prelude, error]
+      - [Data.Yaml, prettyPrintParseException]
+      - [Prelude, Either]
+      - [Language.Haskell.Stylish.Config, configCabal]
+      - [Prelude, map]
+      - [Prelude, show]
+      - [Prelude, "<$>"]
+      - [Language.Haskell.Stylish.Config.Cabal, findLanguageExtensions]
+      - [Prelude, pure]
+      - [Data.List, nub]
+      - [Language.Haskell.Stylish.Config, configLanguageExtensions]
+  - symbol: parseConfig
+    type: Value -> Parser Config
+    use:
+      - [Data.Aeson, Value]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Prelude, List]
+      - [Prelude, pure]
+      - [Prelude, <$>]
+      - [Prelude, <*>]
+      - [Data.Aeson, ".:?"]
+      - [Data.Aeson, ".!="]
+      - [Prelude, Int]
+      - [Prelude, Bool]
+      - [Prelude, ">>="]
+      - [Language.Haskell.Stylish.Config, parseEnum]
+      - [System.IO, nativeNewline]
+      - [Data.Aeson, ".:"]
+      - [Prelude, mapM]
+      - [Language.Haskell.Stylish.Config, parseSteps]
+      - [Prelude, return]
+      - [Prelude, concat]
+      - [Control.Monad, mzero]
+  - symbol: catalog
+    type: Map String (Config -> Object -> Parser Step)
+    use:
+      - [Data.Map, Map]
+      - [Data.Map, fromList]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Config, parseImports]
+      - [Language.Haskell.Stylish.Config, parseLanguagePragmas]
+      - [Language.Haskell.Stylish.Config, parseSimpleAlign]
+      - [Language.Haskell.Stylish.Config, parseSquash]
+      - [Language.Haskell.Stylish.Config, parseTabs]
+      - [Language.Haskell.Stylish.Config, parseTrailingWhitespace]
+      - [Language.Haskell.Stylish.Config, parseUnicodeSyntax]
+  - symbol: parseSteps
+    type: Config -> Value -> Parser [Step]
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Value]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Data.Aeson, Parser]
+      - [Data.Aeson, parseJSON]
+      - [Data.Map, Map]
+      - [Prelude, String]
+      - [Control.Monad, forM]
+      - [Data.Map, toList]
+      - [Prelude, "$"]
+      - [Data.Map, lookup]
+      - [Language.Haskell.Stylish.Config, catalog]
+      - [Prelude, fail]
+      - [Prelude, ++]
+  - symbol: parseEnum
+    type: List (String, a) -> a -> Maybe String -> A.Parser a
+    use:
+      - [Prelude, String]
+      - [Prelude, Maybe]
+      - [Data.Aeson, Parser]
+      - [Prelude, return]
+      - [Prelude, lookup]
+      - [Prelude, fail]
+      - [Prelude, ++]
+      - [Data.List, intercalate]
+      - [Prelude, map]
+      - [Prelude, fst]
+  - symbol: parseSimpleAlign
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, step]
+      - [Prelude, <$>]
+      - [Prelude, pure]
+      - [Language.Haskell.Stylish.Config, configColumns]
+      - [Prelude, <*>]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, Config]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, cCases]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, cTopLevelPatterns]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, cRecords]
+      - [Data.Maybe, fromMaybe]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, defaultConfig]
+      - [Data.Aeson, ".:?"]
+  - symbol: parseSquash
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Prelude, return]
+      - [Language.Haskell.Stylish.Step.Squash, step]
+  - symbol: parseImports
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.Imports, step]
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Prelude, <$>]
+      - [Prelude, pure]
+      - [Language.Haskell.Stylish.Config, configColumns]
+      - [Prelude, <*>]
+      - [Data.Aeson, ".:?"]
+      - [Data.Aeson, .!=]
+      - [Prelude, ">>="]
+      - [Language.Haskell.Stylish.Config, parseEnum]
+      - [Language.Haskell.Stylish.Step.Imports, importAlign]
+      - [Language.Haskell.Stylish.Step.Imports, listAlign]
+      - [Language.Haskell.Stylish.Step.Imports, padModuleNames]
+      - [Language.Haskell.Stylish.Step.Imports, longListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, emptyListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, listPadding]
+      - [Language.Haskell.Stylish.Step.Imports, separateLists]
+      - [Language.Haskell.Stylish.Step.Imports, spaceSurround]
+      - [Language.Haskell.Stylish.Step.Imports, defaultOptions]
+      - [Language.Haskell.Stylish.Step.Imports, ImportAlign]
+      - [Language.Haskell.Stylish.Step.Imports, ListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, LongListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, EmptyListAlign]
+  - symbol: parseLanguagePragmas
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Prelude, <$>]
+      - [Prelude, pure]
+      - [Language.Haskell.Stylish.Config, configColumns]
+      - [Prelude, <*>]
+      - [Data.Aeson, ".:?"]
+      - [Data.Aeson, .!=]
+      - [Prelude, ">>="]
+      - [Language.Haskell.Stylish.Config, parseEnum]
+      - [Language.Haskell.Stylish.Step.LanguagePragmas, step]
+      - [Language.Haskell.Stylish.Step.LanguagePragmas, Style]
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Config, mkLanguage]
+      - [Prelude, List]
+  - symbol: mkLanguage
+    type: Object -> Parser String
+    use:
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Prelude, String]
+      - [Data.Aeson, ".:?"]
+      - [Prelude, maybe]
+      - [Prelude, pure]
+      - [Prelude, fmap]
+      - [Data.Char, toLower]
+      - [Prelude, ==]
+      - [Prelude, fail]
+  - symbol: parseTabs
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Prelude, <$>]
+      - [Data.Aeson, ".:?"]
+      - [Data.Aeson, .!=]
+      - [Language.Haskell.Stylish.Step.Tabs, step]
+  - symbol: parseTrailingWhitespace
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.TrailingWhitespace, step]
+  - symbol: parseUnicodeSyntax
+    type: Config -> Object -> Parser Step
+    use:
+      - [Language.Haskell.Stylish.Config, Config]
+      - [Data.Aeson, Object]
+      - [Data.Aeson, Parser]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Prelude, <$>]
+      - [Data.Aeson, ".:?"]
+      - [Data.Aeson, .!=]
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Config, mkLanguage]
+      - [Prelude, <*>]
+      - [Language.Haskell.Stylish.Step.UnicodeSyntax, step]

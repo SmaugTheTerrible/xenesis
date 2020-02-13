@@ -1,0 +1,78 @@
+module: Language.Haskell.Stylish.Parse
+use:
+  - Data.List
+  - Data.Maybe
+  - Language.Haskell.Exts
+  - Language.Haskell.Stylish.Config
+  - Language.Haskell.Stylish.Step
+symbols:
+  - symbol: defaultExtensions
+    type: List Extension
+    use:
+      - [Language.Haskell.Exts, Extension]
+      - [Prelude, List]
+      - [Prelude, map]
+      - [Language.Haskell.Exts, KnownExtensionSource]
+  - symbol: unCpp
+    type: String -> String
+    use:
+      - [Prelude, String]
+      - [Prelude, unlines]
+      - [Prelude, lines]
+      - [Prelude, Bool]
+      - [Prelude, "||"]
+      - [Data.Maybe, listToMaybe]
+      - [Prelude, ==]
+      - [Prelude, "&&"]
+      - [Prelude, not]
+      - [Prelude, "null"]
+      - [Prelude, last]
+      - [Prelude, ":"]
+      - [Prelude, .]
+  - symbol: unShebang
+    type: String -> String
+    use:
+      - [Prelude, String]
+      - [Prelude, break]
+      - [Prelude, not]
+      - [Prelude, .]
+      - [Prelude, lines]
+      - [Data.List, isPrefixOf]
+      - [Prelude, unlines]
+      - [Prelude, map]
+      - [Prelude, const]
+      - [Prelude, ++]
+      - [Prelude, $]
+  - symbol: dropBom
+    type: String -> String
+    use:
+      - [Prelude, String]
+      - [Prelude, ":"]
+  - symbol: parseModule
+    type: Extensions -> Maybe FilePath -> String -> Either String Module
+    use:
+      - [Language.Haskell.Stylish.Config, Extensions]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [Prelude, String]
+      - [Prelude, Either]
+      - [Language.Haskell.Stylish.Step, Module]
+      - [Language.Haskell.Stylish.Parse, unShebang]
+      - [Language.Haskell.Stylish.Parse, dropBom]
+      - [Prelude, $]
+      - [Prelude, .]
+      - [Prelude, map]
+      - [Language.Haskell.Exts, classifyExtension]
+      - [Language.Haskell.Exts, readExtensions]
+      - [Data.Maybe, fromMaybe]
+      - [Data.List, nub]
+      - [Prelude, ++]
+      - [Language.Haskell.Exts, defaultParseMode]
+      - [Language.Haskell.Exts, baseLanguage]
+      - [Prelude, elem]
+      - [Language.Haskell.Stylish.Parse, unCpp]
+      - [Language.Haskell.Exts, parseModuleWithComments]
+      - [Language.Haskell.Exts, ParseMode]
+      - [Language.Haskell.Exts, ParseResult]
+      - [Prelude, return]
+      - [Prelude, show]

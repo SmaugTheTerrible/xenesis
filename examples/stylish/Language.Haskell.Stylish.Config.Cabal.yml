@@ -1,0 +1,85 @@
+module: Language.Haskell.Stylish.Config.Cabal
+use:
+  - Data.Either
+  - Data.List
+  - Data.Maybe
+  - Distribution.PackageDescription
+  - Distribution.PackageDescription.Parsec
+  - Distribution.Simple.Utils
+  - Distribution.Types.CondTree
+  - Distribution.Verbosity
+  - Language.Haskell.Extension
+  - Language.Haskell.Stylish.Verbose
+  - System.Directory
+  - Language.Haskell.Stylish.Config.Internal
+symbols:
+  - symbol: findLanguageExtensions
+    type: Verbose -> IO [KnownExtension]
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, String]
+      - [Language.Haskell.Extension, KnownExtension]
+      - [Language.Haskell.Stylish.Config.Cabal, findCabalFile]
+      - [Prelude, ">>="]
+      - [Prelude, maybe]
+      - [Prelude, List]
+      - [Prelude, pure]
+      - [Language.Haskell.Stylish.Config.Cabal, readDefaultLanguageExtensions]
+  - symbol: findCabalFile
+    type: Verbose -> IO (Maybe FilePath)
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [System.Directory, getCurrentDirectory]
+      - [Language.Haskell.Stylish.Config.Internal, ancestors]
+      - [Prelude, "<$>"]
+      - [Prelude, filter]
+      - [Data.Either, isRight]
+      - [Prelude, traverse]
+      - [Distribution.Simple.Utils, findPackageDesc]
+      - [Prelude, return]
+      - [Prelude, "<>"]
+      - [Prelude, show]
+      - [Prelude, "$"]
+  - symbol: readDefaultLanguageExtensions
+    type: Verbose -> FilePath -> IO [KnownExtension]
+    use:
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [Prelude, FilePath]
+      - [Language.Haskell.Extension, KnownExtension]
+      - [Prelude, List]
+      - [Prelude, "$"]
+      - [Prelude, "<>"]
+      - [Distribution.PackageDescription.Parsec, readGenericPackageDescription]
+      - [Distribution.Verbosity, silent]
+      - [Distribution.PackageDescription, Library]
+      - [Data.Maybe, maybeToList]
+      - [Prelude, fst]
+      - [Prelude, "<$>"]
+      - [Prelude, "."]
+      - [Distribution.Types.CondTree, ignoreConditions]
+      - [Distribution.PackageDescription, condLibrary]
+      - [Prelude, snd]
+      - [Distribution.PackageDescription, condSubLibraries]
+      - [Distribution.PackageDescription, Executable]
+      - [Distribution.PackageDescription, condExecutables]
+      - [Distribution.PackageDescription, TestSuite]
+      - [Distribution.PackageDescription, condTestSuites]
+      - [Distribution.PackageDescription, Benchmark]
+      - [Distribution.PackageDescription, condBenchmarks]
+      - [Distribution.PackageDescription, BuildInfo]
+      - [Prelude, map]
+      - [Distribution.PackageDescription, libBuildInfo]
+      - [Distribution.PackageDescription, buildInfo]
+      - [Distribution.PackageDescription, testBuildInfo]
+      - [Distribution.PackageDescription, benchmarkBuildInfo]
+      - [Prelude, filter]
+      - [Prelude, concatMap]
+      - [Distribution.PackageDescription, defaultExtensions]
+      - [Language.Haskell.Extension, Extension]
+      - [Prelude, Bool]
+      - [Prelude, error]
+      - [Prelude, show]
+      - [Prelude, pure]
+      - [Data.List, nub]

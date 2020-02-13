@@ -1,0 +1,18 @@
+module: Language.Haskell.Stylish.Verbose
+use:
+  - System.IO
+symbols:
+  - symbol: Verbose
+    type: String -> IO ()
+    use:
+      - [Prelude, String]
+  - symbol: makeVerbose
+    type: Bool -> Verbose
+    use:
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Verbose, Verbose]
+      - [System.IO, hPutStrLn]
+      - [System.IO, stderr]
+      - [Prelude, const]
+      - [Prelude, return]
+      - [Prelude, $]

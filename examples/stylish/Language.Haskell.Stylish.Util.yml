@@ -1,0 +1,137 @@
+module: Language.Haskell.Stylish.Util
+use:
+  - Control.Arrow
+  - Data.Char
+  - Data.Data
+  - Data.Generics
+  - Data.Maybe
+  - Data.Typeable
+  - Language.Haskell.Exts
+  - Language.Haskell.Stylish.Step
+symbols:
+  - symbol: nameToString
+    type: Name l -> String
+    use:
+      - [Language.Haskell.Exts, Name]
+      - [Prelude, String]
+  - symbol: isOperator
+    type: Name l -> Bool
+    use:
+      - [Data.Maybe, fromMaybe]
+      - [Language.Haskell.Exts, Name]
+      - [Prelude, Bool]
+      - [Prelude, .]
+      - [Prelude, fmap]
+      - [Prelude, not]
+      - [Data.Char, isAlpha]
+      - [Data.Maybe, listToMaybe]
+      - [Language.Haskell.Stylish.Util, nameToString]
+  - symbol: indent
+    type: Int -> String -> String
+    use:
+      - [Prelude, Int]
+      - [Prelude, String]
+      - [Prelude, ++]
+      - [Language.Haskell.Stylish.Util, indentPrefix]
+  - symbol: indentPrefix
+    type: Int -> String
+    use:
+      - [Prelude, Int]
+      - [Prelude, String]
+      - [Prelude, replicate]
+      - [Prelude, Char]
+  - symbol: padRight
+    type: Int -> String -> String
+    use:
+      - [Prelude, Int]
+      - [Prelude, String]
+      - [Prelude, ++]
+      - [Prelude, replicate]
+      - [Prelude, Char]
+      - [Prelude, -]
+  - symbol: everything
+    type: (Data a, Data b) => a -> [b]
+    use:
+      - [Data.Data, Data]
+      - [Prelude, ++]
+      - [Prelude, .]
+      - [Data.Maybe, maybeToList]
+      - [Data.Generics, everything]
+      - [Data.Typeable, cast]
+  - symbol: infoPoints
+    type: SrcSpanInfo -> [((Int, Int), (Int, Int))]
+    use:
+      - [Language.Haskell.Exts, SrcSpanInfo]
+      - [Language.Haskell.Exts, srcInfoPoints]
+      - [Prelude, Int]
+      - [Prelude, List]
+      - [Control.Arrow, ">>>"]
+      - [Control.Arrow, "&&&"]
+      - [Prelude, map]
+      - [Language.Haskell.Exts, srcSpanStart]
+      - [Language.Haskell.Exts, srcSpanEnd]
+  - symbol: trimLeft
+    type: String -> String
+    use:
+      - [Prelude, String]
+      - [Prelude, dropWhile]
+      - [Data.Char, isSpace]
+  - symbol: trimRight
+    type: String -> String
+    use:
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Util, trimLeft]
+      - [Prelude, reverse]
+  - symbol: wrap
+    type: Int -> String -> Int -> [String] -> Lines
+    use:
+      - [Prelude, Int]
+      - [Prelude, String]
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Prelude, ":"]
+      - [Language.Haskell.Stylish.Util, wrapRest]
+      - [Prelude, ++]
+      - [Prelude, length]
+      - [Prelude, ">"]
+      - [Prelude, "||"]
+      - [Prelude, +]
+      - [Prelude, ">="]
+      - [Prelude, "&&"]
+      - [Prelude, "<="]
+  - symbol: wrapRest
+    type: Int -> Int -> [String] -> Lines
+    use:
+      - [Prelude, Int]
+      - [Prelude, List]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Prelude, reverse]
+      - [Prelude, "null"]
+      - [Prelude, ":"]
+      - [Language.Haskell.Stylish.Util, indent]
+      - [Prelude, ++]
+      - [Prelude, length]
+      - [Prelude, +]
+      - [Prelude, ">="]
+  - symbol: withHead
+    type: (a -> a) -> [a] -> [a]
+    use:
+      - [Prelude, List]
+      - [Prelude, ":"]
+  - symbol: withLast
+    type: (a -> a) -> [a] -> [a]
+    use:
+      - [Prelude, List]
+      - [Prelude, ":"]
+  - symbol: withInit
+    type: (a -> a) -> [a] -> [a]
+    use:
+      - [Prelude, List]
+      - [Prelude, ":"]
+  - symbol: withTail
+    type: (a -> a) -> [a] -> [a]
+    use:
+      - [Prelude, List]
+      - [Prelude, ":"]
+      - [Prelude, map]

@@ -1,0 +1,35 @@
+module: Language.Haskell.Stylish.Step
+use:
+  - Language.Haskell.Exts
+symbols:
+  - symbol: Lines
+    type: List String
+    use:
+      - [Prelude, List]
+      - [Prelude, String]
+  - symbol: Module
+    type: (Module SrcSpanInfo, [Comment])
+    use:
+      - [Language.Haskell.Exts, Module]
+      - [Language.Haskell.Exts, SrcSpanInfo]
+      - [Language.Haskell.Exts, Comment]
+      - [Prelude, List]
+  - symbol: Step
+    type: Step
+    use: []
+  - symbol: stepName
+    type: String
+    use:
+      - [Prelude, String]
+  - symbol: stepFilter
+    type: Lines -> Module -> Lines
+    use:
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Language.Haskell.Stylish.Step, Module]
+  - symbol: makeStep
+    type: String -> (Lines -> Module -> Lines) -> Step
+    use:
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Language.Haskell.Stylish.Step, Module]

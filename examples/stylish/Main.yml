@@ -1,0 +1,186 @@
+module: Main
+use:
+  - Control.Monad
+  - Data.ByteString.Char8
+  - Data.Monoid
+  - Data.Version
+  - Options.Applicative
+  - System.Exit
+  - System.IO
+  - System.IO.Strict
+  - Language.Haskell.Stylish
+symbols:
+  - symbol: StylishArgs
+    type: StylishArgs
+    use:
+      - [Prelude, Show]
+
+  - symbol: saVersion
+    type: Bool
+    use:
+      - [Prelude, Bool]
+
+  - symbol: saConfig
+    type: Maybe FilePath
+    use:
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+
+  - symbol: saVerbose
+    type: Bool
+    use:
+      - [Prelude, Bool]
+
+  - symbol: saDefaults
+    type: Bool
+    use:
+      - [Prelude, Bool]
+
+  - symbol: saInPlace
+    type: Bool
+    use:
+      - [Prelude, Bool]
+
+  - symbol: saNoUtf8
+    type: Bool
+    use:
+      - [Prelude, Bool]
+
+  - symbol: saFiles
+    type: List FilePath
+    use:
+      - [Prelude, List]
+      - [Prelude, FilePath]
+
+  - symbol: parseStylishArgs
+    type: Parser StylishArgs
+    use:
+      - [Main, StylishArgs]
+      - [Prelude, String]
+      - [Prelude, <$>]
+      - [Data.Monoid, <>]
+      - [Options.Applicative, switch]
+      - [Options.Applicative, help]
+      - [Options.Applicative, long]
+      - [Options.Applicative, hidden]
+      - [Options.Applicative, short]
+      - [Options.Applicative, optional]
+      - [Options.Applicative, strOption]
+      - [Options.Applicative, many]
+      - [Options.Applicative, strArgument]
+      - [Options.Applicative, metavar]
+      - [Prelude, $]
+      - [Prelude, Char]
+
+  - symbol: stylishHaskellVersion
+    type: String
+    use:
+      - [Prelude, String]
+      - [Data.Monoid, <>]
+      - [Data.Version, showVersion]
+      - [Language.Haskell.Stylish, version]
+
+  - symbol: parserInfo
+    type: ParserInfo StylishArgs
+    use:
+      - [Options.Applicative, ParserInfo]
+      - [Main, StylishArgs]
+      - [Options.Applicative, info]
+      - [Options.Applicative, helper]
+      - [Main, parseStylishArgs]
+      - [Prelude, <*>]
+      - [Data.Monoid, <>]
+      - [Prelude, $]
+      - [Options.Applicative, fullDesc]
+      - [Options.Applicative, header]
+      - [Main, stylishHaskellVersion]
+
+  - symbol: main
+    type: IO ()
+    use:
+      - [Prelude, IO]
+      - [Prelude, ">>="]
+      - [Main, parserInfo]
+      - [Main, stylishHaskell]
+      - [Options.Applicative, execParser]
+
+  - symbol: stylishHaskell
+    type: StylishArgs -> IO ()
+    use:
+      - [Control.Monad, unless]
+      - [Main, saNoUtf8]
+      - [Prelude, $]
+      - [Prelude, mapM_]
+      - [System.IO, hSetEncoding]
+      - [System.IO, utf8]
+      - [System.IO, stdin]
+      - [System.IO, stdout]
+      - [Main, saVersion]
+      - [Prelude, putStrLn]
+      - [Main, stylishHaskellVersion]
+      - [Main, saDefaults]
+      - [Data.ByteString.Char8, putStr]
+      - [Language.Haskell.Stylish, defaultConfigBytes]
+      - [Language.Haskell.Stylish, loadConfig]
+      - [Main, saConfig]
+      - [Language.Haskell.Stylish, configSteps]
+      - [Control.Monad, forM_]
+      - [Language.Haskell.Stylish, stepName]
+      - [Prelude, ++]
+      - [Prelude, show]
+      - [Language.Haskell.Stylish, configLanguageExtensions]
+      - [Main, file]
+      - [Language.Haskell.Stylish, makeVerbose]
+      - [Main, saVerbose]
+      - [Prelude, "null"]
+      - [Main, saFiles]
+      - [Prelude, Nothing]
+      - [Prelude, List]
+      - [Prelude, Maybe]
+      - [Prelude, map]
+      - [Prelude, Just]
+
+  - symbol: file
+    type: StylishArgs -> Config -> Maybe FilePath -> IO ()
+    use:
+      - [Main, StylishArgs]
+      - [Language.Haskell.Stylish, Config]
+      - [Prelude, FilePath]
+      - [Prelude, maybe]
+      - [Prelude, getContents]
+      - [Main, readUTF8File]
+      - [Language.Haskell.Stylish, runSteps]
+      - [Language.Haskell.Stylish, configLanguageExtensions]
+      - [Language.Haskell.Stylish, configSteps]
+      - [Prelude, lines]
+      - [Prelude, Maybe]
+      - [Prelude, Either]
+      - [Prelude, unlines]
+      - [System.IO, hPutStrLn]
+      - [System.IO, stderr]
+      - [System.Exit, exitFailure]
+      - [Prelude, not]
+      - [Main, saInPlace]
+      - [Prelude, "null"]
+      - [System.IO, withFile]
+      - [System.IO, IOMode]
+      - [System.IO, hPutStr]
+      - [Language.Haskell.Stylish, configNewline]
+      - [System.IO, NewlineMode]
+      - [System.IO, nativeNewline]
+      - [System.IO, hSetNewlineMode]
+      - [System.IO, stdout]
+      - [Prelude, putStr]
+
+  - symbol: readUTF8File
+    type: FilePath -> IO String
+    use:
+      - [Prelude, FilePath]
+      - [Prelude, String]
+      - [Prelude, $]
+      - [System.IO, withFile]
+      - [System.IO, ReadMode]
+      - [System.IO, hSetEncoding]
+      - [System.IO, utf8]
+      - [System.IO.Strict, hGetContents]
+      - [System.IO, Handle]

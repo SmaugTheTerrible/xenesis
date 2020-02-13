@@ -1,0 +1,82 @@
+module: Language.Haskell.Stylish
+use:
+  - Control.Monad
+  - Language.Haskell.Stylish.Config
+  - Language.Haskell.Stylish.Parse
+  - Language.Haskell.Stylish.Step
+  - Language.Haskell.Stylish.Step.Imports
+  - Language.Haskell.Stylish.Step.LanguagePragmas
+  - Language.Haskell.Stylish.Step.SimpleAlign
+  - Language.Haskell.Stylish.Step.Tabs
+  - Language.Haskell.Stylish.Step.TrailingWhitespace
+  - Language.Haskell.Stylish.Step.UnicodeSyntax
+  - Language.Haskell.Stylish.Verbose
+  - Paths_stylish_haskell
+symbols:
+  - symbol: simpleAlign
+    type: Int -> Config -> Step
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, Config]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.SimpleAlign, step]
+  - symbol: imports
+    type: Int -> Options -> Step
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.Imports, step]
+  - symbol: languagePragmas
+    type: Int -> Style -> Bool -> Bool -> String -> Step
+    use:
+      - [Prelude, Int]
+      - [Prelude, Bool]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.LanguagePragmas, Style]
+      - [Language.Haskell.Stylish.Step.LanguagePragmas, step]
+  - symbol: tabs
+    type: Int -> Step
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.Tabs, step]
+  - symbol: trailingWhitespace
+    type: Step
+    use:
+      - [Language.Haskell.Stylish.Step.TrailingWhitespace, step]
+  - symbol: unicodeSyntax
+    type: Bool -> String -> Step
+    use:
+      - [Prelude, Bool]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step.UnicodeSyntax, step]
+  - symbol: runStep
+    type: Extensions -> Maybe FilePath -> Lines -> Step -> Either String Lines
+    use:
+      - [Language.Haskell.Stylish.Config, Extensions]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Prelude, Either]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step, stepFilter]
+      - [Prelude, <$>]
+      - [Language.Haskell.Stylish.Parse, parseModule]
+      - [Prelude, unlines]
+  - symbol: runSteps
+    type: Extensions -> Maybe FilePath -> [Step] -> Lines -> Either String Lines
+    use:
+      - [Language.Haskell.Stylish.Config, Extensions]
+      - [Prelude, Maybe]
+      - [Prelude, FilePath]
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Step, Step]
+      - [Language.Haskell.Stylish.Step, Lines]
+      - [Prelude, Either]
+      - [Prelude, String]
+      - [Control.Monad, foldM]
+      - [Language.Haskell.Stylish, runStep]

@@ -1,0 +1,54 @@
+module: Language.Haskell.Stylish.Align
+use:
+  - Data.List
+  - Language.Haskell.Exts
+  - Language.Haskell.Stylish.Editor
+  - Language.Haskell.Stylish.Util
+symbols:
+  - symbol: Alignable
+    type: Alignable
+    use:
+      - [Prelude, Show]
+  - symbol: aContainer
+    type: a
+  - symbol: aLeft
+    type: a
+  - symbol: aRight
+    type: a
+  - symbol: aRightLead
+    type: Int
+    use: [[Prelude, Int]]
+  - symbol: align
+    type: Int -> [Alignable H.SrcSpan] -> [Change String]
+    use:
+      - [Prelude, List]
+      - [Prelude, not]
+      - [Language.Haskell.Stylish.Align, fixable]
+      - [Prelude, map]
+      - [Prelude, maximum]
+      - [Language.Haskell.Exts, srcSpanStartColumn]
+      - [Language.Haskell.Exts, srcSpanEndColumn]
+      - [Language.Haskell.Stylish.Align, aLeft]
+      - [Prelude, $]
+      - [Language.Haskell.Stylish.Align, aRight]
+      - [Language.Haskell.Stylish.Align, aRightLead]
+      - [Language.Haskell.Stylish.Editor, changeLine]
+      - [Language.Haskell.Exts, srcSpanStartLine]
+      - [Language.Haskell.Exts, srcSpanEndColumn]
+      - [Language.Haskell.Stylish.Align, aContainer]
+      - [Prelude, splitAt]
+      - [Language.Haskell.Stylish.Util, padRight]
+      - [Language.Haskell.Stylish.Util, trimRight]
+      - [Language.Haskell.Stylish.Util, trimLeft]
+  - symbol: fixable
+    type: List (Alignable H.SrcSpan) -> Bool
+    use:
+      - [Prelude, List]
+      - [Prelude, Bool]
+      - [Prelude, all]
+      - [Prelude, map]
+      - [Language.Haskell.Stylish.Align, aContainer]
+      - [Language.Haskell.Exts, srcSpanStartLine]
+      - [Language.Haskell.Exts, srcSpanEndLine]
+      - [Prelude, length]
+      - [Data.List, nub]

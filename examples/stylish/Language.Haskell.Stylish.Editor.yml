@@ -1,0 +1,78 @@
+module: Language.Haskell.Stylish.Editor
+use:
+  - Data.List
+  - Language.Haskell.Stylish.Block
+symbols:
+  - symbol: Change
+    type: Change
+    use: []
+  - symbol: changeBlock
+    type: Block a
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+  - symbol: changeLines
+    type: List a -> List a
+    use:
+      - [Prelude, List]
+  - symbol: moveChange
+    type: Int -> Change a -> Change a
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Block, moveBlock]
+  - symbol: applyChanges
+    type: List (Change a) -> List a -> List a
+    use:
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Block, overlapping]
+      - [Prelude, error]
+      - [Prelude, $]
+      - [Prelude, ++]
+      - [Data.List, intercalate]
+      - [Prelude, map]
+      - [Data.List, sortOn]
+      - [Language.Haskell.Stylish.Block, blockStart]
+      - [Language.Haskell.Stylish.Editor, changeBlock]
+      - [Prelude, show]
+      - [Language.Haskell.Stylish.Block, blockEnd]
+      - [Prelude, splitAt]
+      - [Prelude, -]
+      - [Language.Haskell.Stylish.Block, blockLength]
+      - [Language.Haskell.Stylish.Editor, changeLines]
+      - [Prelude, length]
+      - [Language.Haskell.Stylish.Editor, moveChange]
+      - [Prelude, +]
+  - symbol: change
+    type: Block a -> ([a] -> [a]) -> Change a
+    use:
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, List]
+  - symbol: changeLine
+    type: Int -> (a -> [a]) -> Change a
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Editor, change]
+      - [Language.Haskell.Stylish.Block, Block]
+  - symbol: delete
+    type: Block a -> Change a
+    use:
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, $]
+      - [Prelude, const]
+  - symbol: deleteLine
+    type: Int -> Change a
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Editor, delete]
+  - symbol: insert
+    type: Int -> [a] -> Change a
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Editor, Change]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, const]

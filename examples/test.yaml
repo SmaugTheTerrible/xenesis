@@ -1,0 +1,13 @@
+module: TestModule
+use:
+  - Module0
+  - Module1
+  - Module2
+symbols:
+  - symbol: fun1
+    type: Int -> Int
+    use:
+      - [Module1, "+"]
+      - [Module0, mod]
+  - symbol: fun2
+    type: Int

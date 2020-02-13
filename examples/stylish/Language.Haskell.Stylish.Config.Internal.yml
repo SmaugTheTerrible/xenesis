@@ -1,0 +1,18 @@
+module: Language.Haskell.Stylish.Config.Internal
+use:
+  - Data.List
+  - System.FilePath
+symbols:
+  - symbol: ancestors
+    type: FilePath -> [FilePath]
+    use:
+      - [Prelude, List]
+      - [Prelude, FilePath]
+      - [Prelude, map]
+      - [System.FilePath, joinPath]
+      - [Prelude, .]
+      - [Prelude, reverse]
+      - [Prelude, dropWhile]
+      - [Prelude, "null"]
+      - [Data.List, inits]
+      - [System.FilePath, splitPath]

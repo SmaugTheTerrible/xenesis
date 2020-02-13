@@ -1,0 +1,15 @@
+system: stylish
+modules:
+  - "Main.yml"
+  - "Language.Haskell.Stylish.yml"
+  - "Language.Haskell.Stylish.Align.yml"
+  - "Language.Haskell.Stylish.Block.yml"
+  - "Language.Haskell.Stylish.Config.yml"
+  - "Language.Haskell.Stylish.Editor.yml"
+  - "Language.Haskell.Stylish.Parse.yml"
+  - "Language.Haskell.Stylish.Step.yml"
+  - "Language.Haskell.Stylish.Util.yml"
+  - "Language.Haskell.Stylish.Verbose.yml"
+  - "Language.Haskell.Stylish.Config.Cabal.yml"
+  - "Language.Haskell.Stylish.Config.Internal.yml"
+  - "Language.Haskell.Stylish.Step.Imports.yml"

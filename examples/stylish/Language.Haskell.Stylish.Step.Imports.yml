@@ -1,0 +1,183 @@
+module: Language.Haskell.Stylish.Step.Imports
+use:
+  - Control.Arrow
+  - Control.Monad
+  - Data.Aeson
+  - Data.Aeson.Types
+  - Data.Char
+  - Data.List
+  - Data.Map
+  - Data.Maybe
+  - Data.Ord
+  - Data.Set
+  - Data.Semigroup
+  - Language.Haskell.Exts
+  - Language.Haskell.Stylish.Block
+  - Language.Haskell.Stylish.Editor
+  - Language.Haskell.Stylish.Step
+  - Language.Haskell.Stylish.Util
+symbols:
+  - symbol: Options
+    type: Options
+    use:
+      - [Prelude, Eq]
+      - [Prelude, Show]
+      - [Language.Haskell.Stylish.Step.Imports, ImportAlign]
+      - [Language.Haskell.Stylish.Step.Imports, ListAlign]
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Step.Imports, LongListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, EmptyListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, ListPadding]
+  - symbol: importAlign
+    type: Options -> ImportAlign
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, ImportAlign]
+  - symbol: listAlign
+    type: Options -> ListAlign
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, ListAlign]
+  - symbol: padModuleNames
+    type: Options -> Bool
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Prelude, Bool]
+  - symbol: longListAlign
+    type: Options -> LongListAlign
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, LongListAlign]
+  - symbol: emptyListAlign
+    type: Options -> EmptyListAlign
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, EmptyListAlign]
+  - symbol: listPadding
+    type: Options -> ListPadding
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, ListPadding]
+  - symbol: separateLists
+    type: Options -> Bool
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Prelude, Bool]
+  - symbol: spaceSurround
+    type: Options -> Bool
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Prelude, Bool]
+  - symbol: defaultOptions
+    type: Options
+    use:
+      - [Language.Haskell.Stylish.Step.Imports, Options]
+      - [Language.Haskell.Stylish.Step.Imports, ImportAlign]
+      - [Language.Haskell.Stylish.Step.Imports, ListAlign]
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Step.Imports, LongListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, EmptyListAlign]
+      - [Language.Haskell.Stylish.Step.Imports, ListPadding]
+  - symbol: ListPadding
+    type: ListPadding
+    use:
+      - [Prelude, Int]
+      - [Prelude, Eq]
+      - [Prelude, Show]
+  - symbol: ImportAlign
+    type: ImportAlign
+    use:
+      - [Prelude, Eq]
+      - [Prelude, Show]
+  - symbol: ListAlign
+    type: ListAlign
+    use:
+      - [Prelude, Eq]
+      - [Prelude, Show]
+  - symbol: EmptyListAlign
+    type: EmptyListAlign
+    use:
+      - [Prelude, Eq]
+      - [Prelude, Show]
+  - symbol: LongListAlign
+    type: LongListAlign
+    use:
+      - [Prelude, Eq]
+      - [Prelude, Show]
+  - symbol: modifyImportSpecs
+    type: ([ImportSpec l] -> [ImportSpec l]) -> ImportDecl l -> ImportDecl l
+    use:
+      - [Language.Haskell.Exts, ImportSpec]
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Language.Haskell.Exts, importSpecs]
+      - [Prelude, <$>]
+      - [Language.Haskell.Exts, ImportSpecList]
+  - symbol: imports
+    type: Module l -> [ImportDecl l]
+    use:
+      - [Language.Haskell.Exts, Module]
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, List]
+  - symbol: importName
+    type: ImportDecl l -> String
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, String]
+      - [Language.Haskell.Exts, ModuleName]
+      - [Language.Haskell.Exts, importModule]
+  - symbol: importPackage
+    type: ImportDecl l -> Maybe String
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, String]
+      - [Prelude, Maybe]
+      - [Language.Haskell.Exts, importPkg]
+  - symbol: compoundImportName
+    type: ImportDecl l -> String
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, String]
+      - [Language.Haskell.Stylish.Step.Imports, importPackage]
+      - [Language.Haskell.Stylish.Step.Imports, importName]
+      - [Prelude, Maybe]
+      - [Prelude, show]
+      - [Prelude, ++]
+  - symbol: longestImport
+    type: List (ImportDecl l) -> Int
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, Int]
+      - [Prelude, List]
+      - [Prelude, maximum]
+      - [Prelude, .]
+      - [Prelude, map]
+      - [Prelude, length]
+      - [Language.Haskell.Stylish.Step.Imports, compoundImportName]
+  - symbol: compareImports
+    type: ImportDecl l -> ImportDecl l -> Ordering
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Prelude, Ordering]
+      - [Data.Ord, comparing]
+      - [Prelude, map]
+      - [Prelude, .]
+      - [Data.Char, toLower]
+      - [Language.Haskell.Stylish.Step.Imports, importName]
+      - [Language.Haskell.Stylish.Step.Imports, importPackage]
+      - [Prelude, fmap]
+      - [Language.Haskell.Exts, importQualified]
+      - [Control.Arrow, "&&&"]
+  - symbol: deduplicateImportSpecs
+    type: ImportDecl l -> ImportDecl l
+    use:
+      - [Language.Haskell.Exts, ImportDecl]
+      - [Language.Haskell.Stylish.Step.Imports, modifyImportSpecs]
+      - [Prelude, $]
+      - [Prelude, map]
+      - [Language.Haskell.Stylish.Step.Imports, recomposeImportSpec]
+      - [Language.Haskell.Stylish.Step.Imports, decomposeImportSpec]
+      - [Prelude, .]
+      - [Language.Haskell.Stylish.Step.Imports, "<>"]
+      - [Data.Map, toList]
+      - [Data.Map, fromListWith]
+      - [Prelude, Ord]

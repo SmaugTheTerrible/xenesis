@@ -1,0 +1,109 @@
+module: Language.Haskell.Stylish.Block
+use:
+  - Control.Arrow
+  - Data.IntSet
+  - Language.Haskell.Exts
+symbols:
+  - symbol: Block
+    type: Block a
+    use:
+      - [Prelude, Int]
+      - [Prelude, Eq]
+      - [Prelude, Ord]
+      - [Prelude, Show]
+  - symbol: blockStart
+    type: Int
+    use:
+      - [Prelude, Int]
+  - symbol: blockEnd
+    type: Int
+    use:
+      - [Prelude, Int]
+  - symbol: LineBlock
+    type: Block String
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, String]
+  - symbol: SpanBlock
+    type: Block Char
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, Char]
+  - symbol: blockLength
+    type: Block a -> Int
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, +]
+      - [Prelude, -]
+  - symbol: linesFromSrcSpan
+    type: SrcSpanInfo -> LineBlock
+    use:
+      - [Language.Haskell.Exts, SrcSpanInfo]
+      - [Language.Haskell.Stylish.Block, LineBlock]
+      - [Language.Haskell.Exts, srcInfoSpan]
+      - [Language.Haskell.Exts, srcSpanStartLine]
+      - [Language.Haskell.Exts, srcSpanEndLine]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, uncurry]
+      - [Control.Arrow, arr]
+      - [Control.Arrow, ">>>"]
+      - [Control.Arrow, "&&&"]
+  - symbol: spanFromSrcSpan
+    type: SrcSpanInfo -> SpanBlock
+    use:
+      - [Language.Haskell.Exts, SrcSpanInfo]
+      - [Language.Haskell.Stylish.Block, SpanBlock]
+      - [Language.Haskell.Exts, srcInfoSpan]
+      - [Language.Haskell.Exts, srcSpanStartColumn]
+      - [Language.Haskell.Exts, srcSpanEndColumn]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, uncurry]
+      - [Control.Arrow, arr]
+      - [Control.Arrow, ">>>"]
+      - [Control.Arrow, "&&&"]
+  - symbol: moveBlock
+    type: Int -> Block a -> Block a
+    use:
+      - [Prelude, Int]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, +]
+  - symbol: adjacent
+    type: Block a -> Block a -> Bool
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, Bool]
+      - [Prelude, "||"]
+      - [Prelude, +]
+      - [Prelude, ==]
+  - symbol: merge
+    type: Block a -> Block a -> Block a
+    use:
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, min]
+      - [Prelude, max]
+  - symbol: overlapping
+    type: List (Block a) -> Bool
+    use:
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Data.IntSet, empty]
+      - [Prelude, Bool]
+      - [Language.Haskell.Stylish.Block, blockStart]
+      - [Language.Haskell.Stylish.Block, blockEnd]
+      - [Prelude, any]
+      - [Data.IntSet, member]
+      - [Data.IntSet, union]
+      - [Data.IntSet, fromList]
+      - [Prelude, $]
+  - symbol: groupAdjacent
+    type: List ((Block a, b)) -> List ((Block a, List b))
+    use:
+      - [Prelude, foldr]
+      - [Prelude, List]
+      - [Language.Haskell.Stylish.Block, Block]
+      - [Prelude, block]
+      - [Prelude, fst]
+      - [Language.Haskell.Stylish.Block, adjacent]
+      - [Prelude, ":"]
+      - [Prelude, ++]
+      - [Language.Haskell.Stylish.Block, merge]
