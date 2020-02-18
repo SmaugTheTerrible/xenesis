@@ -6,6 +6,9 @@ use:
 symbols:
   - symbol: fun1
     type: Int -> Int
+    side:
+      - [in, Event1]
+      - [out, object.pointer]
     use:
       - [Module1, "+"]
       - [Module0, mod]

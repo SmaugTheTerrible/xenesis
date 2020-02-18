@@ -54,10 +54,10 @@ data ASystem =
   deriving (Show, Generic)
 
 data ASide =
-  ASide AName ASideType
+  ASide ASideType AName
   deriving (Show, Generic)
 
-type ASideBase = (AName, ASideType)
+type ASideBase = (ASideType, AName)
 
 data ASideType
   = Read
@@ -99,8 +99,8 @@ instance FromJSON ASystemDescription where
 
 instance FromJSON ASideType where
   parseJSON = withText "ASideType" $ \case
-                                         "write" -> pure Write
-                                         "read" -> pure Read
+                                         "out" -> pure Write
+                                         "in" -> pure Read
 
 loadModule :: FilePath -> IO (Either ParseException AModule)
 loadModule = decodeFileEither
