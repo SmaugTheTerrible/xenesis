@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
 
 module Xenesis.Core.Analyzer where
 
@@ -13,7 +13,7 @@ import qualified Data.Tree          as Tree
 import           Data.Yaml
 import           GHC.Generics       (Generic)
 
-import System.FilePath
+import           System.FilePath
 
 type AName = T.Text
 
@@ -21,19 +21,25 @@ type AType = AName
 
 type Pair = (AName, AName)
 
+type AModuleId = AName
+
+type ASymbolId = AName
+
+type ASideId = AName
+
 data ASymbol =
   ASymbol
-    { aSymbolName :: AName
-    , aSymbolType :: AType
+    { aSymbolName  :: ASymbolId
+    , aSymbolType  :: AType
     , aSideEffects :: [ASide]
-    , usedFuncs   :: [Pair]
+    , usedFuncs    :: [Pair]
     }
   deriving (Show, Generic)
 
 data AModule =
   AModule
-    { aModuleName  :: AName
-    , usedModules  :: [AName]
+    { aModuleName  :: AModuleId
+    , usedModules  :: [AModuleId]
     , aModuleData  :: [AName]
     , aModuleFuncs :: [ASymbol]
     }
@@ -55,9 +61,9 @@ data ASystem =
 
 data ASide =
   ASide ASideType AName
-  deriving (Show, Generic)
+  deriving (Eq, Show, Generic)
 
-type ASideBase = (ASideType, AName)
+type ASideBase = (ASideType, ASideId)
 
 data ASideType
   = Read
@@ -79,12 +85,14 @@ data ASystemDescription =
   deriving (Show, Generic)
 
 instance FromJSON ASymbol where
-  parseJSON = withObject "ASymbol" $ \v -> ASymbol <$> v .: "symbol" <*> v .:? "type" .!= "" <*> parseASide v <*> v .:? "use" .!= []
+  parseJSON =
+    withObject "ASymbol" $ \v ->
+      ASymbol <$> v .: "symbol" <*> v .:? "type" .!= "" <*> parseASide v <*> v .:? "use" .!= []
 
 parseASide :: Object -> Parser [ASide]
 parseASide v = do
   ss <- v .:? "side" .!= []
-  mapM (\ (name, t) -> pure $ ASide name t) ss
+  mapM (\(name, t) -> pure $ ASide name t) ss
 
 instance FromJSON AModule where
   parseJSON =
@@ -98,9 +106,10 @@ instance FromJSON ASystemDescription where
   parseJSON = withObject "ASystem" $ \v -> ASystemDescription <$> v .: "system" <*> v .:? "modules" .!= []
 
 instance FromJSON ASideType where
-  parseJSON = withText "ASideType" $ \case
-                                         "out" -> pure Write
-                                         "in" -> pure Read
+  parseJSON =
+    withText "ASideType" $ \case
+      "out" -> pure Write
+      "in" -> pure Read
 
 loadModule :: FilePath -> IO (Either ParseException AModule)
 loadModule = decodeFileEither
@@ -127,26 +136,41 @@ prettyPrintErr = prettyPrintParseException
 name :: String -> AName
 name = T.pack
 
-whoUse :: ASystem -> AName -> AName -> [Pair]
+whoUse :: ASystem -> AModuleId -> ASymbolId -> [Pair]
 whoUse system moduleName funcName =
   let modules = aSystemModules system
       pair = (moduleName, funcName)
-      isFuncUsePair :: (AName, AName) -> ASymbol -> Bool
+      isFuncUsePair :: (AModuleId, ASymbolId) -> ASymbol -> Bool
       isFuncUsePair p func = elem p $ usedFuncs func
-      getUsePairs :: (AName, AName) -> AModule -> [(AName, AName)]
+      getUsePairs :: (AModuleId, ASymbolId) -> AModule -> [(AModuleId, ASymbolId)]
       getUsePairs p mod = [(aModuleName mod, aSymbolName fun) | fun <- aModuleFuncs mod, isFuncUsePair p fun]
    in concatMap (getUsePairs pair) modules
 
-getUsedModules :: AModule -> [AName]
+whoAffected :: ASystem -> ASideId -> ASideType -> [Pair]
+whoAffected system sideName sideType =
+  let modules = aSystemModules system
+      opposite =
+        ASide
+          (if sideType == Write
+             then Read
+             else Write)
+          sideName
+      isFuncAffected :: ASide -> ASymbol -> Bool
+      isFuncAffected side func = elem side $ aSideEffects func
+      getAffected :: ASide -> AModule -> [(AModuleId, ASymbolId)]
+      getAffected side mod = [(aModuleName mod, aSymbolName fun) | fun <- aModuleFuncs mod, isFuncAffected side fun]
+   in concatMap (getAffected opposite) modules
+
+getUsedModules :: AModule -> [AModuleId]
 getUsedModules = nub . map fst . concatMap usedFuncs . aModuleFuncs
 
-getModuleByName :: ASystem -> AName -> Maybe AModule
+getModuleByName :: ASystem -> AModuleId -> Maybe AModule
 getModuleByName sys name =
   case filter (\m -> aModuleName m == name) (aSystemModules sys) of
     []    -> Nothing
     [mod] -> Just mod
 
-modulesTree :: ASystem -> AName -> Tree.Tree AName
+modulesTree :: ASystem -> AModuleId -> Tree.Tree AModuleId
 modulesTree sys name =
   let ms = maybe [] getUsedModules (getModuleByName sys name)
    in Tree.Node name $ map (modulesTree sys) $ filter (/= name) ms
@@ -168,14 +192,15 @@ extract file = do
               [_, x] -> x
       pure $ T.unlines $ filter (not . T.null) [x | line <- T.lines content, let x = getData line]
 
-useTree :: ASystem -> AName -> AName -> Tree.Tree Pair
+useTree :: ASystem -> AModuleId -> ASymbolId -> Tree.Tree Pair
 useTree sys mod sym =
   let pair = (mod, sym)
       useLvl = whoUse sys mod sym
+      --sideLvl = whoAffected sys
    in Tree.Node pair $ map (uncurry (useTree sys)) useLvl
 
 drawUseTree :: Tree.Tree Pair -> IO ()
 drawUseTree t = putStr $ Tree.drawTree $ fmap (\(m, s) -> show m <> "::" <> show s) t
 
-drawModulesTree :: Tree.Tree AName -> IO ()
+drawModulesTree :: Tree.Tree AModuleId -> IO ()
 drawModulesTree t = putStr $ Tree.drawTree $ fmap T.unpack t
