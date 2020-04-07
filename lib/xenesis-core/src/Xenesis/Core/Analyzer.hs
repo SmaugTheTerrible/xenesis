@@ -87,7 +87,8 @@ data ASystemDescription =
 instance FromJSON ASymbol where
   parseJSON =
     withObject "ASymbol" $ \v ->
-      ASymbol <$> v .: "symbol" <*> v .:? "type" .!= "" <*> parseASide v <*> v .:? "use" .!= []
+      ASymbol <$> v .: "symbol" <*> v .:? "type" .!= "" <*> parseASide v <*>
+      v .:? "use" .!= []
 
 parseASide :: Object -> Parser [ASide]
 parseASide v = do
@@ -97,13 +98,18 @@ parseASide v = do
 instance FromJSON AModule where
   parseJSON =
     withObject "AModule" $ \v ->
-      AModule <$> v .: "module" <*> v .:? "use" .!= [] <*> v .:? "types" .!= [] <*> v .:? "symbols" .!= []
+      AModule <$> v .: "module" <*> v .:? "use" .!= [] <*> v .:? "types" .!= [] <*>
+      v .:? "symbols" .!= []
 
 instance FromJSON AComponentDescription where
-  parseJSON = withObject "AComponent" $ \v -> AComponentDescription <$> v .: "component" <*> v .:? "modules" .!= []
+  parseJSON =
+    withObject "AComponent" $ \v ->
+      AComponentDescription <$> v .: "component" <*> v .:? "modules" .!= []
 
 instance FromJSON ASystemDescription where
-  parseJSON = withObject "ASystem" $ \v -> ASystemDescription <$> v .: "system" <*> v .:? "modules" .!= []
+  parseJSON =
+    withObject "ASystem" $ \v ->
+      ASystemDescription <$> v .: "system" <*> v .:? "modules" .!= []
 
 instance FromJSON ASideType where
   parseJSON =
@@ -142,24 +148,44 @@ whoUse system moduleName funcName =
       pair = (moduleName, funcName)
       isFuncUsePair :: (AModuleId, ASymbolId) -> ASymbol -> Bool
       isFuncUsePair p func = elem p $ usedFuncs func
-      getUsePairs :: (AModuleId, ASymbolId) -> AModule -> [(AModuleId, ASymbolId)]
-      getUsePairs p mod = [(aModuleName mod, aSymbolName fun) | fun <- aModuleFuncs mod, isFuncUsePair p fun]
+      getUsePairs ::
+           (AModuleId, ASymbolId) -> AModule -> [(AModuleId, ASymbolId)]
+      getUsePairs p mod =
+        [ (aModuleName mod, aSymbolName fun)
+        | fun <- aModuleFuncs mod
+        , isFuncUsePair p fun
+        ]
    in concatMap (getUsePairs pair) modules
 
-whoAffected :: ASystem -> ASideId -> ASideType -> [Pair]
-whoAffected system sideName sideType =
+whoAffected :: ASystem -> AModuleId -> ASymbolId -> [Pair]
+whoAffected system moduleId symbolId =
   let modules = aSystemModules system
-      opposite =
+      sides =
+        let [ss] =
+              [ aSideEffects s
+              | m <- modules
+              , aModuleName m == moduleId
+              , s <- aModuleFuncs m
+              , aSymbolName s == symbolId
+              ]
+         in ss
+      opposite sideType =
         ASide
           (if sideType == Write
              then Read
              else Write)
-          sideName
+      opposites = map (\(ASide t n) -> opposite t n) sides
       isFuncAffected :: ASide -> ASymbol -> Bool
       isFuncAffected side func = elem side $ aSideEffects func
-      getAffected :: ASide -> AModule -> [(AModuleId, ASymbolId)]
-      getAffected side mod = [(aModuleName mod, aSymbolName fun) | fun <- aModuleFuncs mod, isFuncAffected side fun]
-   in concatMap (getAffected opposite) modules
+      getAffected :: [ASide] -> AModule -> [(AModuleId, ASymbolId)]
+      getAffected sides mod =
+        let affected side =
+              [ (aModuleName mod, aSymbolName fun)
+              | fun <- aModuleFuncs mod
+              , isFuncAffected side fun
+              ]
+         in concatMap affected sides
+   in concatMap (getAffected opposites) modules
 
 getUsedModules :: AModule -> [AModuleId]
 getUsedModules = nub . map fst . concatMap usedFuncs . aModuleFuncs
@@ -190,17 +216,27 @@ extract file = do
             case T.splitOn startSeq l of
               [_]    -> ""
               [_, x] -> x
-      pure $ T.unlines $ filter (not . T.null) [x | line <- T.lines content, let x = getData line]
+      pure $
+        T.unlines $
+        filter
+          (not . T.null)
+          [x | line <- T.lines content, let x = getData line]
+
+data NodeType
+  = UseNode
+  | SideNode
+  deriving (Show, Eq)
 
 useTree :: ASystem -> AModuleId -> ASymbolId -> Tree.Tree Pair
 useTree sys mod sym =
   let pair = (mod, sym)
       useLvl = whoUse sys mod sym
-      --sideLvl = whoAffected sys
-   in Tree.Node pair $ map (uncurry (useTree sys)) useLvl
+      sideLvl = whoAffected sys mod sym
+   in Tree.Node pair $ map (uncurry (useTree sys)) (useLvl ++ sideLvl)
 
 drawUseTree :: Tree.Tree Pair -> IO ()
-drawUseTree t = putStr $ Tree.drawTree $ fmap (\(m, s) -> show m <> "::" <> show s) t
+drawUseTree t =
+  putStr $ Tree.drawTree $ fmap (\(m, s) -> show m <> "::" <> show s) t
 
 drawModulesTree :: Tree.Tree AModuleId -> IO ()
 drawModulesTree t = putStr $ Tree.drawTree $ fmap T.unpack t
